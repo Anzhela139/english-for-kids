@@ -131,6 +131,7 @@ class Category {
 
     makeCategory() {
         let $category = makeElem('div', 'category_train');
+        $category.setAttribute('data-route', this.title);
         let $imageCtr = makeElem('div', 'category_img');
         let $image = makeElem('img', '');
         $image.src = this.image;
@@ -147,25 +148,31 @@ class Category {
 }
 
 class Router {
-    constructor(link, route) {
+    constructor(link) {
         this.routes = [];
         this.currentPage = null;
-        this.link = link;
-        this.route = route;
     };
 
     init(){     
-        this.routes.push(this.route);
+        this.routes.push('main-page');
+        categories.forEach(item=>{
+            this.routes.push(item.name);
+        })
+        console.log(this.routes)
         history.replaceState({}, 'Main page', '#main-page');
         window.addEventListener('popstate', this.poppin);
     };
 
     nav(ev){
+        console.log(ev)
+        console.log(this)
         ev.preventDefault();
-        this.currentPage = ev.target.getAttribute('data-route');
+
+        this.currentPage = (ev.target.getAttribute('data-route')) || getAncestor(ev.target, 'category_train').getAttribute('data-route');
         pageObj.c = this.currentPage;
-        console.log(pageObj.page)
+        console.log(this.currentPage)
         history.pushState({}, this.currentPage, `#${this.currentPage}`);
+        //return this.currentPage;
     };
 
     poppin(ev){
@@ -177,26 +184,27 @@ class Router {
 class App{
     init() {
         //$container.innerHTML = '';
-        this.pageScreen();
 
-        console.log(pageObj.page)
+        let linkRouter = new Router();
+            linkRouter.init();
+            this.pageScreen(linkRouter);
 
-        window.addEventListener('popstate', this.pagePoppin);
         let $links = document.querySelectorAll('.menu-el a');
         $links.forEach((link)=>{
-            let route = link.getAttribute('data-route');
+            link.addEventListener('click', function(e){
+                //console.log(linkRouter)
+                let route = this.getAttribute('data-index');
+                (route === '-1') ? mpage.makeMain(linkRouter) : mpage.makeCategoryPage(+route);
 
-            let linkRouter = new Router(link, route);
-            linkRouter.init();
-            linkRouter.dom = link;
-            linkRouter.dom.addEventListener('click', linkRouter.nav);
-            //link.addEventListener('click', this.nav);
+                linkRouter.nav(e);
+                //console.log(route)
+            });
         })  
     }
 
-    pageScreen() {
+    pageScreen(linkRouter) {
         if (pageObj.page === 'animal-a') {
-            this.makeMain();
+            this.makeMain(linkRouter);
         }
         else {
             let index=0;
@@ -211,30 +219,35 @@ class App{
     }
     
     makeCategoryPage(index) {
-        //$container.innerHTML = '';
+        $container.innerHTML = '';
         let cardItems = [];
         cards[index].forEach(item=>{
             let itemCard = new Card(item.word, item.translation, item.image, item.audioSrc);
             itemCard.dom = itemCard.makeCard();
             cardItems.push(itemCard);
-            console.log(itemCard)
+            //console.log(itemCard)
             $container.appendChild(itemCard.dom);
         })
         return cardItems;
     }
 
-    makeMain() {
-        //$container.innerHTML = '';
+    makeMain(linkRouter) {
+        $container.innerHTML = '';
         //let catArr = Array.from($menuEls);
         let catItems = [];
         categories.forEach(item=>{
             let itemCat = new Category(item.image, item.name);
             itemCat.dom = itemCat.makeCategory();
             catItems.push(itemCat);
-   
-            let linkRouter = new Router(itemCat.dom, itemCat.name);
-            linkRouter.init();
-            itemCat.dom.addEventListener('click', linkRouter.nav);
+
+            itemCat.dom.addEventListener('click', function(e) {
+                console.log(this)
+                linkRouter.nav(e);
+                console.log(item.index)
+                mpage.makeCategoryPage(item.index+1);
+            });
+
+            //itemCat.dom.addEventListener('click', linkRouter.nav)
             $container.appendChild(itemCat.dom);
         })
         console.log(catItems)

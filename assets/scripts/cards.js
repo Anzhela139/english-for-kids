@@ -1,5 +1,5 @@
 const cards = [ 
-    ['Action (set A)', 'Action (set B)', 'Animal (set A)', 'Animal (set B)', 'Clothes', 'Emotions'],
+    ['Action (set A)', 'Action (set B)', 'Animal (set A)', 'Animal (set B)', 'Clothes', 'Emotions', 'Foods', 'Weather'],
     [
       {
         word: 'cry',
@@ -298,6 +298,106 @@ const cards = [
         translation: 'смех',
         image: 'assets/img/laugh.jpg',
         audioSrc: 'assets/audio/laugh.mp3'
+      }
+    ],
+    [
+      {
+        word: 'burger',
+        translation: 'бургер',
+        image: 'assets/img/burger.jpg',
+        audioSrc: 'assets/audio/burger.mp3'
+      },
+      {
+        word: 'salad',
+        translation: 'салат',
+        image: 'assets/img/salad.jpg',
+        audioSrc: 'assets/audio/salad.mp3'
+      },
+      {
+        word: 'pie',
+        translation: 'пирог',
+        image: 'assets/img/pie.jpg',
+        audioSrc: 'assets/audio/pie.mp3'
+      },
+      {
+        word: 'egg',
+        translation: 'яйцо',
+        image: 'assets/img/egg.jpg',
+        audioSrc: 'assets/audio/egg.mp3'
+      },
+      {
+        word: 'french fries',
+        translation: 'картошка фри',
+        image: 'assets/img/french-fries.jpg',
+        audioSrc: 'assets/audio/french-fries.mp3'
+      },
+      {
+        word: 'soup',
+        translation: 'суп',
+        image: 'assets/img/soup.jpg',
+        audioSrc: 'assets/audio/soup.mp3'
+      },
+      {
+        word: 'pancake',
+        translation: 'блинчики',
+        image: 'assets/img/pancake.jpg',
+        audioSrc: 'assets/audio/pancake.mp3'
+      },
+      {
+        word: 'pizza',
+        translation: 'пицца',
+        image: 'assets/img/pizza.jpg',
+        audioSrc: 'assets/audio/pizza.mp3'
+      }
+    ],
+    [
+      {
+        word: 'rain',
+        translation: 'дождь',
+        image: 'assets/img/rain.jpg',
+        audioSrc: 'assets/audio/rain.mp3'
+      },
+      {
+        word: 'snow',
+        translation: 'снег',
+        image: 'assets/img/snow.jpg',
+        audioSrc: 'assets/audio/snow.mp3'
+      },
+      {
+        word: 'cloud',
+        translation: 'облако',
+        image: 'assets/img/cloud.jpg',
+        audioSrc: 'assets/audio/cloud.mp3'
+      },
+      {
+        word: 'fog',
+        translation: 'туман',
+        image: 'assets/img/fog.jpg',
+        audioSrc: 'assets/audio/fog.mp3'
+      },
+      {
+        word: 'rainbow',
+        translation: 'радуга',
+        image: 'assets/img/rainbow.jpg',
+        audioSrc: 'assets/audio/rainbow.mp3'
+      },
+      {
+        word: 'frost',
+        translation: 'иней',
+        image: 'assets/img/frost.jpg',
+        audioSrc: 'assets/audio/frost.mp3'
+      },
+      {
+        word: 'lighting',
+        translation: 'молния',
+        image: 'assets/img/lighting.jpg',
+        audioSrc: 'assets/audio/lighting.mp3'
+      },
+      {
+        word: 'storm',
+        translation: 'буря',
+        image: 'assets/img/storm.jpg',
+        audioSrc: 'assets/audio/storm.mp3'
       }
     ]
   ]
