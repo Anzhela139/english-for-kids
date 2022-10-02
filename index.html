@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="reset.min.css">
     <link rel="stylesheet" href="style.css">
     <title>English for kids</title>
 </head>
@@ -12,60 +14,37 @@
     <header>
         <div class="menu_burger">
             <span></span>
+            <span></span>
+            <span></span>
         </div>
-        <nav class="menu">
+        <nav class="menu menu-close">
             <ul>
-                <li><a href="javascript:void(0)">Main page</a></li>
-                <li><a href="javascript:void(0)">Action(set a)</a></li>
-                <li><a href="javascript:void(0)">Action(set b)</a></li>
-                <li><a href="javascript:void(0)">Action(set c)</a></li>
-                <li><a href="javascript:void(0)">Adjective</a></li>
-                <li><a href="javascript:void(0)">Animal(set a)</a></li>
-                <li><a href="javascript:void(0)">Animal(set b)</a></li>
-                <li><a href="javascript:void(0)">Clothes</a></li> 
-                <li><a href="javascript:void(0)">Emotions</a></li>
+                <li class="menu-el"><a href="javascript:void(0)">Main page</a></li>
+                <li class="menu-el"><a href="javascript:void(0)">Action(set a)</a></li>
+                <li class="menu-el"><a href="javascript:void(0)">Action(set b)</a></li>
+                <li class="menu-el"><a href="javascript:void(0)">Action(set c)</a></li>
+                <li class="menu-el"><a href="javascript:void(0)">Adjective</a></li>
+                <li class="menu-el"><a href="javascript:void(0)">Animal(set a)</a></li>
+                <li class="menu-el"><a href="javascript:void(0)">Animal(set b)</a></li>
+                <li class="menu-el"><a href="javascript:void(0)">Clothes</a></li> 
+                <li class="menu-el"><a href="javascript:void(0)">Emotions</a></li>
             </ul>
         </nav>
         <div class="switch_toggle">
             <input id='switch_toggle' type="checkbox" name="toggle" class="switch_toggle-input">
-            <label for="switch_toggle"></label>
+            <label id='switch_toggle-label' for="switch_toggle">train</label>
         </div>
     </header>
     <div class="container">
-        <div class="category">
-            <div class="category_img"></div>
-            <div class="category_title"></div>
-        </div>
-        <div class="category">            
-            <div class="category_img"></div>
-            <div class="category_title"></div>
-        </div> 
-        <div class="category">
-            <div class="category_img"></div>
-            <div class="category_title"></div>
-        </div>
-        <div class="category">
-            <div class="category_img"></div>
-            <div class="category_title"></div>
-        </div>
-        <div class="category">
-            <div class="category_img"></div>
-            <div class="category_title"></div>
-        </div>
-        <div class="category">
-            <div class="category_img"></div>
-            <div class="category_title"></div>
-        </div>
-        <div class="category">
-            <div class="category_img"></div>
-            <div class="category_title"></div>
-        </div>
-        <div class="category">
-            <div class="category_img"></div>
-            <div class="category_title"></div>
-        </div>
     </div>
-    <footer></footer>
-    <script src="script.js"></script>
+    <footer>
+        <ul>
+            <li><a href="https://github.com/anzhelaAbitova">My Github</a></li>
+            <li>2020</li>
+            <li><a href="https://rs.school/js/"><img src="https://rs.school/images/rs_school_js.svg" alt=""></a></li>
+        </ul>
+    </footer>
+    <div class="screen"></div>
+    <script src="script.js" type="module"></script>
 </body>
 </html>
