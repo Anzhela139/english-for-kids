@@ -1,31 +1,31 @@
 const categories = [
     {
-        name: 'Action (set A)',
+        name: 'action-a',
         image: 'assets/img/draw.jpg',
         index: 0
     },
     {
-        name: 'Action (set B)',
+        name: 'action-b',
         image: 'assets/img/run.jpg',
         index: 1
     },
     {
-        name: 'Animal (set A)',
+        name: 'animal-a',
         image: 'assets/img/cat.jpg',
         index: 2
     },
     {
-        name: 'Animal (set B)',
+        name: 'animal-b',
         image: 'assets/img/fish1.jpg',
         index: 3
     },
     {
-        name: 'Clothes',
+        name: 'clothes',
         image: 'assets/img/blouse.jpg',
         index: 4
     },    
     {
-        name: 'Emotions',
+        name: 'emotions',
         image: 'assets/img/surprised.jpg',
         index: 5
     }

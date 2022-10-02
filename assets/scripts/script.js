@@ -13,6 +13,18 @@ const $menuEls = document.querySelectorAll('.menu-el');
 const $toggleSwitch = document.querySelector('#switch_toggle');
 const $toggleSwitchLabel = document.querySelector('#switch_toggle-label');
 
+let page = 'main-page';
+
+let pageObj = {
+    page: 'animal-a',
+    get a() {
+        return this.page;
+    },
+    set c(val) {
+        this.page = val;
+    }
+}
+
 function getAncestor(el, cls) {
     while ((el = el.parentElement) && !el.classList.contains(cls));
     return el;
@@ -134,18 +146,74 @@ class Category {
     }
 }
 
+class Router {
+    constructor(link, route) {
+        this.routes = [];
+        this.currentPage = null;
+        this.link = link;
+        this.route = route;
+    };
 
+    init(){     
+        this.routes.push(this.route);
+        history.replaceState({}, 'Main page', '#main-page');
+        window.addEventListener('popstate', this.poppin);
+    };
 
-class Pages{
+    nav(ev){
+        ev.preventDefault();
+        this.currentPage = ev.target.getAttribute('data-route');
+        pageObj.c = this.currentPage;
+        console.log(pageObj.page)
+        history.pushState({}, this.currentPage, `#${this.currentPage}`);
+    };
+
+    poppin(ev){
+        //let hash = location.hash.replace('#' ,'');
+        history.pushState({}, this.currentPage, `#${this.currentPage}`);
+    };
+}
+
+class App{
     init() {
-        this.makeCategoryPage();
-        let catItems = this.makeMain();
-        //$container.appendChild(catItems);
+        //$container.innerHTML = '';
+        this.pageScreen();
+
+        console.log(pageObj.page)
+
+        window.addEventListener('popstate', this.pagePoppin);
+        let $links = document.querySelectorAll('.menu-el a');
+        $links.forEach((link)=>{
+            let route = link.getAttribute('data-route');
+
+            let linkRouter = new Router(link, route);
+            linkRouter.init();
+            linkRouter.dom = link;
+            linkRouter.dom.addEventListener('click', linkRouter.nav);
+            //link.addEventListener('click', this.nav);
+        })  
+    }
+
+    pageScreen() {
+        if (pageObj.page === 'animal-a') {
+            this.makeMain();
+        }
+        else {
+            let index=0;
+            categories.forEach(item=>{
+                    console.log(item.index)
+                    if (item.name === pageObj.page) {
+                        index=item.index;
+                    }
+            })
+            this.makeCategoryPage(index);
+        }
     }
     
-    makeCategoryPage() {
+    makeCategoryPage(index) {
+        //$container.innerHTML = '';
         let cardItems = [];
-        cards[1].forEach(item=>{
+        cards[index].forEach(item=>{
             let itemCard = new Card(item.word, item.translation, item.image, item.audioSrc);
             itemCard.dom = itemCard.makeCard();
             cardItems.push(itemCard);
@@ -156,16 +224,23 @@ class Pages{
     }
 
     makeMain() {
-        let catArr = Array.from($menuEls);
+        //$container.innerHTML = '';
+        //let catArr = Array.from($menuEls);
         let catItems = [];
         categories.forEach(item=>{
             let itemCat = new Category(item.image, item.name);
             itemCat.dom = itemCat.makeCategory();
             catItems.push(itemCat);
+   
+            let linkRouter = new Router(itemCat.dom, itemCat.name);
+            linkRouter.init();
+            itemCat.dom.addEventListener('click', linkRouter.nav);
+            $container.appendChild(itemCat.dom);
         })
+        console.log(catItems)
         return catItems;
     }
 }
 
-const mpage = new Pages();
+const mpage = new App();
 console.log(mpage.init())

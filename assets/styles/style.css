@@ -198,13 +198,16 @@ input.switch_toggle-input:checked+label:after {
 
 .card {
     overflow: hidden;
-    height: 170px;
+    min-height: 170px;
+    height: 43vh;
     margin: 1rem 0;
     border-radius: 12px;
     transition: all .3s ease-in-out;
     background-color: #ddd;
     perspective: 1000px;
 }
+
+
 
 .card .flip.flip-over {
     transform: rotateY(180deg);
