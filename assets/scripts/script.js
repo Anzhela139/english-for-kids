@@ -69,7 +69,7 @@ class App {
         $links.forEach((link) => {
             link.addEventListener('click', function (e) {
                 let route = this.getAttribute('data-index');
-                (route === '-1') ? mpage.makeMain(linkRouter): mpage.makeCategoryPage(+route + 1);
+                (route === '-1') ? mpage.makeMain(linkRouter) : mpage.makeCategoryPage(+route + 1);
 
                 linkRouter.nav(e);
             });
@@ -140,7 +140,7 @@ class App {
         let word = '';
         let mark = 1;
 
-        cardItems.forEach(item=>{
+        cardItems.forEach(item => {
             let audio = getDescendant(item.dom, 'card_sound');
             $cards.push(item.dom);
 
@@ -156,14 +156,14 @@ class App {
         const clearTimer = (timer) => {
             clearTimeout(timer);
         }
-        $btnPlay.addEventListener('click', function(){
+        $btnPlay.addEventListener('click', function () {
             playSound($mixedAudios[0]);
             let repeat = $mixedAudios.shift();
-            $btnPlay.textContent = ''; 
+            $btnPlay.textContent = '';
             $btnPlay.appendChild($btnIcon);
             word = repeat.getAttribute('data-route')
             makeTimer($mixedAudios, 8000)
-            $btnIcon.addEventListener('click', function(e){
+            $btnIcon.addEventListener('click', function (e) {
                 e.stopPropagation();
                 playSound(repeat);
                 clearTimer(makeTimer);
@@ -171,8 +171,8 @@ class App {
 
 
 
-            $cards.forEach(item=>{
-                item.addEventListener('click', function(){
+            $cards.forEach(item => {
+                item.addEventListener('click', function () {
 
                     if (this.getAttribute('data-route') === word) {
                         console.log(mark)
@@ -192,7 +192,7 @@ class App {
                             $container.appendChild($finalImgW);
                             $container.appendChild($succSound);
                             playSound($succSound);
-                            setTimeout(()=>{
+                            setTimeout(() => {
                                 mpage.mode = 'train';
                                 mpage.init();
                             }, 8000);
@@ -201,7 +201,7 @@ class App {
                             $container.appendChild($finalImgF);
                             $container.appendChild($failSound);
                             playSound($failSound);
-                            setTimeout(()=>{
+                            setTimeout(() => {
                                 mpage.mode = 'train';
                                 mpage.init();
                             }, 8000);
@@ -225,7 +225,7 @@ class App {
             cardItems.push(itemCard);
             $container.appendChild(itemCard.dom);
         })
-        if (this.mode === 'train') {} else {
+        if (this.mode === 'train') { } else {
             this.makePlay(cardItems);
         }
         return cardItems;

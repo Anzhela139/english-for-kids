@@ -1,4 +1,4 @@
-import { playSound, getAncestor, getDescendant, randomArr, makeElem } from './utils.js';
+import { makeElem } from './utils.js';
 
 class Stars {
     makeStar(grade) {

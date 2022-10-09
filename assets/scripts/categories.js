@@ -23,7 +23,7 @@ const categories = [
         name: 'clothes',
         image: 'assets/img/blouse.jpg',
         index: 4
-    },    
+    },
     {
         name: 'emotions',
         image: 'assets/img/surprised.jpg',

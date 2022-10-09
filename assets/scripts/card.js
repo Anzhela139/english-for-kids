@@ -1,4 +1,4 @@
-import { playSound, getAncestor, getDescendant, randomArr, makeElem } from './utils.js';
+import { playSound, getAncestor, makeElem } from './utils.js';
 
 class Card {
     constructor(word, translation, image, sound) {

@@ -1,5 +1,5 @@
 import categories from "./categories.js";
-import { playSound, getAncestor, getDescendant, randomArr, makeElem } from './utils.js';
+import { getAncestor } from './utils.js';
 
 let pageObj = {
     page: 'animal-a',
