@@ -59,8 +59,6 @@ const makeElem = (type, className = '', text = '') => {
 }
 
 $menuBurgerBtn.addEventListener('click', () => {
-    //if (document.querySelector(".menu-open")) {$menu.classList.add('menu-close')};
-    //console.log($menu);
     $menu.classList.toggle('menu-open');
     $menu.classList.toggle('menu-close');
     $menuBurgerBtn.classList.toggle('menu-burger-rotate');
@@ -89,7 +87,6 @@ class Card {
 
     makeSound(card, sound) {
         card.addEventListener('click', function () {
-            console.log(sound)
             playSound(sound);
         });
     }
@@ -163,8 +160,6 @@ class Card {
         $card.appendChild($sound);
         $card.setAttribute('data-route', this.word);
 
-        //this.makeSound($card, $sound);
-
         return $card;
     }
 }
@@ -205,21 +200,15 @@ class Router {
         categories.forEach(item => {
             this.routes.push(item.name);
         })
-        console.log(this.routes)
         history.replaceState({}, 'Main page', '#main-page');
         window.addEventListener('popstate', this.poppin);
     };
 
     nav(ev) {
-        console.log(ev)
-        console.log(this)
         ev.preventDefault();
-
         this.currentPage = (ev.target.getAttribute('data-route')) || getAncestor(ev.target, 'category').getAttribute('data-route');
         pageObj.c = this.currentPage;
-        console.log(this.currentPage)
         history.pushState({}, this.currentPage, `#${this.currentPage}`);
-        console.log(history)
     };
 
     poppin(ev) {
@@ -231,20 +220,24 @@ class Router {
 class Stars {
     makeStar(grade) {
         let $starsCNR = makeElem('div', 'stars-cnr');
-        let mark = grade / 2;
+        let mark = (grade) ? grade / 2 : 0;
+        console.log(mark)
+
         for (let i = 0; i < 4; i++) {
-            if (mark > 0 && mark % 1 === 0) {
+            if (mark % 1 === 0) {
                 let $starFull = makeElem('span', 'material-icons', 'star');
                 $starsCNR.appendChild($starFull);
-                console.log(mark)
-                mark--;
-            } else if (grade == 0) {
-                let $starVoid = makeElem('span', 'material-icons', 'star_border');
-                $starsCNR.appendChild($starVoid);
-            } else {
+                mark -= 0.5;
+            } else if (mark % 1 == 0.5) {
                 let $starHalf = makeElem('span', 'material-icons', 'star_half');
                 $starsCNR.appendChild($starHalf);
+                mark -= 0.5;
+            } else if (mark === 0 || mark < 0) {
+                let $starVoid = makeElem('span', 'material-icons', 'star_border');
+                $starsCNR.appendChild($starVoid);
             }
+            //mark -= 0.5;
+            console.log(mark)
         }
         return $starsCNR;
     }
@@ -265,15 +258,13 @@ class App {
         let $links = document.querySelectorAll('.menu-el a');
         $links.forEach((link) => {
             link.addEventListener('click', function (e) {
-                //console.log(linkRouter)
                 let route = this.getAttribute('data-index');
                 (route === '-1') ? mpage.makeMain(linkRouter): mpage.makeCategoryPage(+route + 1);
 
                 linkRouter.nav(e);
-                //console.log(route)
             });
         })
-        this.switchMode();
+        this.switchMode(linkRouter);
     }
 
     pageScreen(linkRouter) {
@@ -282,7 +273,6 @@ class App {
         } else {
             let index = 0;
             categories.forEach(item => {
-                console.log(item.index)
                 if (item.name === pageObj.page) {
                     index = item.index;
                 }
@@ -291,18 +281,28 @@ class App {
         }
     }
 
-    switchMode() {
-        $toggleSwitch.addEventListener('input', () => {
-            $toggleSwitchLabel.innerHTML = ($toggleSwitchLabel.innerHTML === 'train') ? 'play' : 'train';
-            $toggleSwitchLabel.style.paddingRight = ($toggleSwitchLabel.innerHTML === 'train') ? '1rem' : '5rem';
+    switchMode(linkRouter) {
+        $toggleSwitch.addEventListener('change', () => {
             this.mode = (this.mode === 'train') ? 'play' : 'train';
-            this.init();
+            $toggleSwitchLabel.innerHTML = this.mode;
+            $toggleSwitchLabel.style.paddingRight = (this.mode === 'train') ? '1rem' : '5rem';
+            if (this.mode === 'play') {
+                if (!$menu.classList.contains('menu-play')) {
+                    $menu.classList.add('menu-play');
+                }
+            }
+            else {
+                $menu.classList.remove('menu-play');
+            }
+            this.pageScreen(linkRouter);
             return this.mode;
         })
     }
 
+
+
     makePlay(cardItems) {
-        let $btnPlay = makeElem('button', 'btn-play');
+        let $btnPlay = makeElem('button', 'btn-play', 'start');
         let $btnIcon = makeElem('span', 'material-icons', 'replay');
         $btnPlay.appendChild($btnIcon);
 
@@ -328,7 +328,7 @@ class App {
         let $audios = [];
         let $cards = [];
         let word = '';
-        let mark = 0;
+        let mark = 1;
 
         cardItems.forEach(item=>{
             let audio = getDescendant(item.dom, 'card_sound');
@@ -337,24 +337,39 @@ class App {
             $audios.push(audio);
         })
         let $mixedAudios = randomArr($audios);
+        const makeTimer = (arr, timer) => setTimeout(() => {
+            let repeat = arr.shift();
+            word = repeat.getAttribute('data-route');
+            playSound(repeat);
+            makeTimer(arr, timer);
+        }, timer);
+        const clearTimer = (timer) => {
+            clearTimeout(timer);
+        }
         $btnPlay.addEventListener('click', function(){
-            console.log($mixedAudios)
             playSound($mixedAudios[0]);
             let repeat = $mixedAudios.shift();
+            $btnPlay.textContent = ''; 
+            $btnPlay.appendChild($btnIcon);
             word = repeat.getAttribute('data-route')
-
+            makeTimer($mixedAudios, 8000)
             $btnIcon.addEventListener('click', function(e){
                 e.stopPropagation();
                 playSound(repeat);
+                clearTimer(makeTimer);
             })
-            console.log($cards)
+
+
+
             $cards.forEach(item=>{
                 item.addEventListener('click', function(){
-                    console.log(item);
 
                     if (this.getAttribute('data-route') === word) {
-                        console.log(word)
-                        $starsCNR = stars.makeStar(++mark);
+                        console.log(mark)
+
+                        $starsCNR = stars.makeStar(mark);
+                        mark++;
+                        $container.before($starsCNR);
                         playSound($corrSound);
                     }
                     else {
@@ -363,7 +378,6 @@ class App {
                     }
                     if ($mixedAudios.length === 0) {
                         $container.innerHTML = '';
-                        console.log(mpage.fail)
                         if (!mpage.fail) {
                             $container.appendChild($finalImgW);
                             $container.appendChild($succSound);
@@ -386,13 +400,10 @@ class App {
                 })
             })
         })
-
-        $container.prepend($starsCNR);
-
         $container.appendChild($errSound);
         $container.appendChild($corrSound);
 
-        $container.appendChild($btnPlay);
+        $container.after($btnPlay);
     }
 
     makeCategoryPage(index) {
@@ -402,7 +413,6 @@ class App {
             let itemCard = new Card(item.word, item.translation, item.image, item.audioSrc);
             itemCard.dom = (this.mode === 'train') ? itemCard.makeCardTrain() : itemCard.makeCardPlay();
             cardItems.push(itemCard);
-            //console.log(itemCard)
             $container.appendChild(itemCard.dom);
         })
         if (this.mode === 'train') {} else {
@@ -413,7 +423,6 @@ class App {
 
     makeMain(linkRouter) {
         $container.innerHTML = '';
-        //let catArr = Array.from($menuEls);
         let catItems = [];
         categories.forEach(item => {
             let itemCat = new Category(item.image, item.name);
@@ -421,19 +430,15 @@ class App {
             catItems.push(itemCat);
 
             itemCat.dom.addEventListener('click', function (e) {
-                console.log(this)
                 linkRouter.nav(e);
-                console.log(item.index)
                 mpage.makeCategoryPage(item.index + 1);
             });
 
-            //itemCat.dom.addEventListener('click', linkRouter.nav)
             $container.appendChild(itemCat.dom);
         })
-        console.log(catItems)
         return catItems;
     }
 }
 
 const mpage = new App('train');
-console.log(mpage.init())
+mpage.init()
