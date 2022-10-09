@@ -1,5 +1,7 @@
-import cards from '/assets/cards.js';
-import categories from '/assets/categories.js';
+'use strict'
+
+import cards from './assets/cards.js';
+import categories from './assets/categories.js';
 
 
 const $container = document.querySelector('.container');
@@ -25,14 +27,32 @@ let pageObj = {
     }
 }
 
+const playSound = (sound) => {
+    sound.currentTime = 0;
+    sound.play();
+}
+
 function getAncestor(el, cls) {
     while ((el = el.parentElement) && !el.classList.contains(cls));
     return el;
 }
 
-const makeElem = (type, className = '', text= '') => {
+function getDescendant(el, cls) {
+    while ((el = el.lastElementChild) && !el.classList.contains(cls));
+    return el;
+}
+
+const randomArr = (arr) => arr.slice(0).sort((a, b) => 0.5 - Math.random());
+
+const makeElem = (type, className = '', text = '') => {
     let el = document.createElement(type);
-    if (className) el.classList.add(className);
+    if (className) {
+        if (typeof className === 'string') {
+            el.classList.add(className);
+        } else {
+            className.forEach(item => el.classList.add(item));
+        }
+    };
     let textNode = document.createTextNode(text);
     el.appendChild(textNode);
     return el;
@@ -59,12 +79,6 @@ $menuBurgerBtn.addEventListener('click', () => {
     })
 })
 
-$toggleSwitch.addEventListener('input', () => {
-    $toggleSwitchLabel.innerHTML = ($toggleSwitchLabel.innerHTML = 'train') ? 'play' : 'train';
-})
-
-
-
 class Card {
     constructor(word, translation, image, sound) {
         this.word = word;
@@ -73,10 +87,17 @@ class Card {
         this.sound = sound;
     }
 
-    makeCard() {
+    makeSound(card, sound) {
+        card.addEventListener('click', function () {
+            console.log(sound)
+            playSound(sound);
+        });
+    }
+
+    makeCardTrain() {
         let $card = makeElem('div', 'card');
         let $imageCtr = makeElem('div', 'card_img');
-        let $image = makeElem('img', '');        
+        let $image = makeElem('img', '');
         $image.src = this.image;
         $image.setAttribute('alt', this.word);
 
@@ -103,7 +124,7 @@ class Card {
         $front.appendChild($imageCtr);
         $front.appendChild($wordCtr);
 
-        let $clone = $imageCtr.cloneNode( true );
+        let $clone = $imageCtr.cloneNode(true);
         $back.appendChild($clone);
         $back.appendChild($translationCtr);
 
@@ -112,11 +133,37 @@ class Card {
         $card.appendChild($flip);
         $card.appendChild($sound);
 
-            $btn.addEventListener('click', function (e) {
-                let $flip = getAncestor(this, 'flip');
-                $flip.classList.add('flip-over');
-            });
+        $btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            let $flip = getAncestor(this, 'flip');
+            $flip.classList.add('flip-over');
+            $card.addEventListener('mouseleave', function () {
+                this.firstElementChild.classList.remove('flip-over');
+            })
+        });
 
+        this.makeSound($card, $sound);
+
+        return $card;
+    }
+
+    makeCardPlay() {
+        let $card = makeElem('div', 'card_play');
+        let $imageCtr = makeElem('div', 'card_img');
+        let $image = makeElem('img', '');
+        $image.src = this.image;
+        $image.setAttribute('alt', this.word);
+
+        let $sound = makeElem('audio', 'card_sound');
+        $sound.setAttribute('data-route', this.word);
+        $sound.src = this.sound;
+
+        $imageCtr.appendChild($image);
+        $card.appendChild($imageCtr);
+        $card.appendChild($sound);
+        $card.setAttribute('data-route', this.word);
+
+        //this.makeSound($card, $sound);
 
         return $card;
     }
@@ -129,8 +176,8 @@ class Category {
         this.title = title;
     }
 
-    makeCategory() {
-        let $category = makeElem('div', 'category_train');
+    makeCategory(mode) {
+        let $category = (mode === 'train') ? makeElem('div', ['category', 'category_train']) : makeElem('div', ['category', 'category_play']);
         $category.setAttribute('data-route', this.title);
         let $imageCtr = makeElem('div', 'category_img');
         let $image = makeElem('img', '');
@@ -153,9 +200,9 @@ class Router {
         this.currentPage = null;
     };
 
-    init(){     
+    init() {
         this.routes.push('main-page');
-        categories.forEach(item=>{
+        categories.forEach(item => {
             this.routes.push(item.name);
         })
         console.log(this.routes)
@@ -163,71 +210,204 @@ class Router {
         window.addEventListener('popstate', this.poppin);
     };
 
-    nav(ev){
+    nav(ev) {
         console.log(ev)
         console.log(this)
         ev.preventDefault();
 
-        this.currentPage = (ev.target.getAttribute('data-route')) || getAncestor(ev.target, 'category_train').getAttribute('data-route');
+        this.currentPage = (ev.target.getAttribute('data-route')) || getAncestor(ev.target, 'category').getAttribute('data-route');
         pageObj.c = this.currentPage;
         console.log(this.currentPage)
         history.pushState({}, this.currentPage, `#${this.currentPage}`);
-        //return this.currentPage;
+        console.log(history)
     };
 
-    poppin(ev){
+    poppin(ev) {
         //let hash = location.hash.replace('#' ,'');
         history.pushState({}, this.currentPage, `#${this.currentPage}`);
     };
 }
 
-class App{
+class Stars {
+    makeStar(grade) {
+        let $starsCNR = makeElem('div', 'stars-cnr');
+        let mark = grade / 2;
+        for (let i = 0; i < 4; i++) {
+            if (mark > 0 && mark % 1 === 0) {
+                let $starFull = makeElem('span', 'material-icons', 'star');
+                $starsCNR.appendChild($starFull);
+                console.log(mark)
+                mark--;
+            } else if (grade == 0) {
+                let $starVoid = makeElem('span', 'material-icons', 'star_border');
+                $starsCNR.appendChild($starVoid);
+            } else {
+                let $starHalf = makeElem('span', 'material-icons', 'star_half');
+                $starsCNR.appendChild($starHalf);
+            }
+        }
+        return $starsCNR;
+    }
+}
+
+class App {
+    constructor(mode) {
+        this.mode = mode;
+        this.fail = false;
+    }
     init() {
         //$container.innerHTML = '';
 
         let linkRouter = new Router();
-            linkRouter.init();
-            this.pageScreen(linkRouter);
+        linkRouter.init();
+        this.pageScreen(linkRouter);
 
         let $links = document.querySelectorAll('.menu-el a');
-        $links.forEach((link)=>{
-            link.addEventListener('click', function(e){
+        $links.forEach((link) => {
+            link.addEventListener('click', function (e) {
                 //console.log(linkRouter)
                 let route = this.getAttribute('data-index');
-                (route === '-1') ? mpage.makeMain(linkRouter) : mpage.makeCategoryPage(+route);
+                (route === '-1') ? mpage.makeMain(linkRouter): mpage.makeCategoryPage(+route + 1);
 
                 linkRouter.nav(e);
                 //console.log(route)
             });
-        })  
+        })
+        this.switchMode();
     }
 
     pageScreen(linkRouter) {
         if (pageObj.page === 'animal-a') {
             this.makeMain(linkRouter);
-        }
-        else {
-            let index=0;
-            categories.forEach(item=>{
-                    console.log(item.index)
-                    if (item.name === pageObj.page) {
-                        index=item.index;
-                    }
+        } else {
+            let index = 0;
+            categories.forEach(item => {
+                console.log(item.index)
+                if (item.name === pageObj.page) {
+                    index = item.index;
+                }
             })
             this.makeCategoryPage(index);
         }
     }
-    
+
+    switchMode() {
+        $toggleSwitch.addEventListener('input', () => {
+            $toggleSwitchLabel.innerHTML = ($toggleSwitchLabel.innerHTML === 'train') ? 'play' : 'train';
+            $toggleSwitchLabel.style.paddingRight = ($toggleSwitchLabel.innerHTML === 'train') ? '1rem' : '5rem';
+            this.mode = (this.mode === 'train') ? 'play' : 'train';
+            this.init();
+            return this.mode;
+        })
+    }
+
+    makePlay(cardItems) {
+        let $btnPlay = makeElem('button', 'btn-play');
+        let $btnIcon = makeElem('span', 'material-icons', 'replay');
+        $btnPlay.appendChild($btnIcon);
+
+        let $errSound = makeElem('audio', '');
+        $errSound.src = 'assets/audio/error.mp3';
+        let $corrSound = $errSound.cloneNode(true);
+        $corrSound.src = 'assets/audio/correct.mp3';
+        let $failSound = $corrSound.cloneNode(true);
+        $failSound.src = 'assets/audio/failure.mp3';
+        let $succSound = $failSound.cloneNode(true);
+        $succSound.src = 'assets/audio/success.mp3';
+
+        let $finalImgW = makeElem('img', 'final-img');
+        $finalImgW.src = 'assets/img/success.jpg';
+        $finalImgW.setAttribute('alt', 'success');
+        let $finalImgF = $finalImgW.cloneNode(true);
+        $finalImgF.src = 'assets/img/failure.jpg';
+        $finalImgF.setAttribute('alt', 'failure');
+
+        let stars = new Stars();
+        let $starsCNR = stars.makeStar(0);
+
+        let $audios = [];
+        let $cards = [];
+        let word = '';
+        let mark = 0;
+
+        cardItems.forEach(item=>{
+            let audio = getDescendant(item.dom, 'card_sound');
+            $cards.push(item.dom);
+
+            $audios.push(audio);
+        })
+        let $mixedAudios = randomArr($audios);
+        $btnPlay.addEventListener('click', function(){
+            console.log($mixedAudios)
+            playSound($mixedAudios[0]);
+            let repeat = $mixedAudios.shift();
+            word = repeat.getAttribute('data-route')
+
+            $btnIcon.addEventListener('click', function(e){
+                e.stopPropagation();
+                playSound(repeat);
+            })
+            console.log($cards)
+            $cards.forEach(item=>{
+                item.addEventListener('click', function(){
+                    console.log(item);
+
+                    if (this.getAttribute('data-route') === word) {
+                        console.log(word)
+                        $starsCNR = stars.makeStar(++mark);
+                        playSound($corrSound);
+                    }
+                    else {
+                        mpage.fail = true;
+                        playSound($errSound);
+                    }
+                    if ($mixedAudios.length === 0) {
+                        $container.innerHTML = '';
+                        console.log(mpage.fail)
+                        if (!mpage.fail) {
+                            $container.appendChild($finalImgW);
+                            $container.appendChild($succSound);
+                            playSound($succSound);
+                            setTimeout(()=>{
+                                mpage.mode = 'train';
+                                mpage.init();
+                            }, 8000);
+                        }
+                        else {
+                            $container.appendChild($finalImgF);
+                            $container.appendChild($failSound);
+                            playSound($failSound);
+                            setTimeout(()=>{
+                                mpage.mode = 'train';
+                                mpage.init();
+                            }, 8000);
+                        }
+                    }
+                })
+            })
+        })
+
+        $container.prepend($starsCNR);
+
+        $container.appendChild($errSound);
+        $container.appendChild($corrSound);
+
+        $container.appendChild($btnPlay);
+    }
+
     makeCategoryPage(index) {
         $container.innerHTML = '';
         let cardItems = [];
-        cards[index].forEach(item=>{
+        cards[index].forEach(item => {
             let itemCard = new Card(item.word, item.translation, item.image, item.audioSrc);
-            itemCard.dom = itemCard.makeCard();
+            itemCard.dom = (this.mode === 'train') ? itemCard.makeCardTrain() : itemCard.makeCardPlay();
             cardItems.push(itemCard);
             //console.log(itemCard)
             $container.appendChild(itemCard.dom);
         })
+        if (this.mode === 'train') {} else {
+            this.makePlay(cardItems);
+        }
         return cardItems;
     }
 
@@ -235,16 +415,16 @@ class App{
         $container.innerHTML = '';
         //let catArr = Array.from($menuEls);
         let catItems = [];
-        categories.forEach(item=>{
+        categories.forEach(item => {
             let itemCat = new Category(item.image, item.name);
-            itemCat.dom = itemCat.makeCategory();
+            itemCat.dom = itemCat.makeCategory(this.mode);
             catItems.push(itemCat);
 
-            itemCat.dom.addEventListener('click', function(e) {
+            itemCat.dom.addEventListener('click', function (e) {
                 console.log(this)
                 linkRouter.nav(e);
                 console.log(item.index)
-                mpage.makeCategoryPage(item.index+1);
+                mpage.makeCategoryPage(item.index + 1);
             });
 
             //itemCat.dom.addEventListener('click', linkRouter.nav)
@@ -255,5 +435,5 @@ class App{
     }
 }
 
-const mpage = new App();
+const mpage = new App('train');
 console.log(mpage.init())
