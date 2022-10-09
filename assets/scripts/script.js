@@ -176,7 +176,7 @@ class App {
 
                     if (this.getAttribute('data-route') === word) {
                         console.log(mark)
-
+                        this.classList.add('checked_card');
                         $starsCNR = stars.makeStar(mark);
                         mark++;
                         $container.before($starsCNR);
