@@ -2,7 +2,11 @@
 
 import cards from './assets/cards.js';
 import categories from './assets/categories.js';
-
+import Card from './assets/card.js';
+import Category from './assets/category.js';
+import Router from './assets/router.js';
+import Stars from './assets/stars.js';
+import { playSound, getAncestor, getDescendant, randomArr, makeElem } from './assets/utils.js';
 
 const $container = document.querySelector('.container');
 
@@ -27,36 +31,6 @@ let pageObj = {
     }
 }
 
-const playSound = (sound) => {
-    sound.currentTime = 0;
-    sound.play();
-}
-
-function getAncestor(el, cls) {
-    while ((el = el.parentElement) && !el.classList.contains(cls));
-    return el;
-}
-
-function getDescendant(el, cls) {
-    while ((el = el.lastElementChild) && !el.classList.contains(cls));
-    return el;
-}
-
-const randomArr = (arr) => arr.slice(0).sort((a, b) => 0.5 - Math.random());
-
-const makeElem = (type, className = '', text = '') => {
-    let el = document.createElement(type);
-    if (className) {
-        if (typeof className === 'string') {
-            el.classList.add(className);
-        } else {
-            className.forEach(item => el.classList.add(item));
-        }
-    };
-    let textNode = document.createTextNode(text);
-    el.appendChild(textNode);
-    return el;
-}
 
 $menuBurgerBtn.addEventListener('click', () => {
     $menu.classList.toggle('menu-open');
@@ -77,171 +51,7 @@ $menuBurgerBtn.addEventListener('click', () => {
     })
 })
 
-class Card {
-    constructor(word, translation, image, sound) {
-        this.word = word;
-        this.translation = translation;
-        this.image = image;
-        this.sound = sound;
-    }
 
-    makeSound(card, sound) {
-        card.addEventListener('click', function () {
-            playSound(sound);
-        });
-    }
-
-    makeCardTrain() {
-        let $card = makeElem('div', 'card');
-        let $imageCtr = makeElem('div', 'card_img');
-        let $image = makeElem('img', '');
-        $image.src = this.image;
-        $image.setAttribute('alt', this.word);
-
-        let $flip = makeElem('div', 'flip');
-        let $front = makeElem('div', 'front');
-        let $back = makeElem('div', 'back');
-        let $titleFront = makeElem('h3', '', this.word);
-
-        let $wordCtr = makeElem('div', 'card_title');
-        let $word = makeElem('h3', '', this.word);
-        let $translationCtr = makeElem('div', 'card_title');
-        let $translation = makeElem('h3', '', this.translation);
-        let $btn = makeElem('button', 'btn-rotate');
-        let $btnIcon = makeElem('span', 'material-icons', 'flip_camera_android');
-        let $sound = makeElem('audio');
-        $sound.src = this.sound;
-
-        $imageCtr.appendChild($image);
-        $btn.appendChild($btnIcon);
-        $wordCtr.appendChild($word);
-        $wordCtr.appendChild($btn);
-        $translationCtr.appendChild($translation);
-
-        $front.appendChild($imageCtr);
-        $front.appendChild($wordCtr);
-
-        let $clone = $imageCtr.cloneNode(true);
-        $back.appendChild($clone);
-        $back.appendChild($translationCtr);
-
-        $flip.appendChild($front);
-        $flip.appendChild($back);
-        $card.appendChild($flip);
-        $card.appendChild($sound);
-
-        $btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            let $flip = getAncestor(this, 'flip');
-            $flip.classList.add('flip-over');
-            $card.addEventListener('mouseleave', function () {
-                this.firstElementChild.classList.remove('flip-over');
-            })
-        });
-
-        this.makeSound($card, $sound);
-
-        return $card;
-    }
-
-    makeCardPlay() {
-        let $card = makeElem('div', 'card_play');
-        let $imageCtr = makeElem('div', 'card_img');
-        let $image = makeElem('img', '');
-        $image.src = this.image;
-        $image.setAttribute('alt', this.word);
-
-        let $sound = makeElem('audio', 'card_sound');
-        $sound.setAttribute('data-route', this.word);
-        $sound.src = this.sound;
-
-        $imageCtr.appendChild($image);
-        $card.appendChild($imageCtr);
-        $card.appendChild($sound);
-        $card.setAttribute('data-route', this.word);
-
-        return $card;
-    }
-}
-
-
-class Category {
-    constructor(image, title) {
-        this.image = image;
-        this.title = title;
-    }
-
-    makeCategory(mode) {
-        let $category = (mode === 'train') ? makeElem('div', ['category', 'category_train']) : makeElem('div', ['category', 'category_play']);
-        $category.setAttribute('data-route', this.title);
-        let $imageCtr = makeElem('div', 'category_img');
-        let $image = makeElem('img', '');
-        $image.src = this.image;
-        $image.setAttribute('alt', this.title);
-        let $titleCtr = makeElem('div', 'category_title')
-        let $title = makeElem('h3', '', this.title);
-        $imageCtr.appendChild($image);
-        $titleCtr.appendChild($title);
-        $category.appendChild($imageCtr);
-        $category.appendChild($titleCtr);
-
-        return $category;
-    }
-}
-
-class Router {
-    constructor(link) {
-        this.routes = [];
-        this.currentPage = null;
-    };
-
-    init() {
-        this.routes.push('main-page');
-        categories.forEach(item => {
-            this.routes.push(item.name);
-        })
-        history.replaceState({}, 'Main page', '#main-page');
-        window.addEventListener('popstate', this.poppin);
-    };
-
-    nav(ev) {
-        ev.preventDefault();
-        this.currentPage = (ev.target.getAttribute('data-route')) || getAncestor(ev.target, 'category').getAttribute('data-route');
-        pageObj.c = this.currentPage;
-        history.pushState({}, this.currentPage, `#${this.currentPage}`);
-    };
-
-    poppin(ev) {
-        //let hash = location.hash.replace('#' ,'');
-        history.pushState({}, this.currentPage, `#${this.currentPage}`);
-    };
-}
-
-class Stars {
-    makeStar(grade) {
-        let $starsCNR = makeElem('div', 'stars-cnr');
-        let mark = (grade) ? grade / 2 : 0;
-        console.log(mark)
-
-        for (let i = 0; i < 4; i++) {
-            if (mark % 1 === 0) {
-                let $starFull = makeElem('span', 'material-icons', 'star');
-                $starsCNR.appendChild($starFull);
-                mark -= 0.5;
-            } else if (mark % 1 == 0.5) {
-                let $starHalf = makeElem('span', 'material-icons', 'star_half');
-                $starsCNR.appendChild($starHalf);
-                mark -= 0.5;
-            } else if (mark === 0 || mark < 0) {
-                let $starVoid = makeElem('span', 'material-icons', 'star_border');
-                $starsCNR.appendChild($starVoid);
-            }
-            //mark -= 0.5;
-            console.log(mark)
-        }
-        return $starsCNR;
-    }
-}
 
 class App {
     constructor(mode) {
