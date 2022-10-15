@@ -16,7 +16,7 @@ const categories = [
     },
     {
         name: 'animal-b',
-        image: 'assets/images/fish1.jpg',
+        image: 'assets/images/fish.jpg',
         index: 3
     },
     {

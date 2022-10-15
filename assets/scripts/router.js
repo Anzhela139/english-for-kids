@@ -12,9 +12,11 @@ let pageObj = {
 }
 
 class Router {
-    constructor(link) {
+    constructor() {
         this.routes = [];
         this.currentPage = null;
+
+        this.init();
     };
 
     init() {

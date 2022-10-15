@@ -1,4 +1,5 @@
 const playSound = (sound) => {
+    console.log(sound)
     sound.currentTime = 0;
     sound.play();
 }

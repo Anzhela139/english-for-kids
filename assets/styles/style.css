@@ -12,15 +12,16 @@ body {
     position: relative;
     display: grid;
     height: 100vh;
-    grid-template-rows: 150px auto 80px;
+    grid-template-rows: 80px auto 80px;
+    max-height: 100vh;
 }
 
 header {
-
-    width: 90vw;
+    width: 85vw;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .menu_burger {
@@ -132,8 +133,8 @@ header {
 
 input.switch_toggle-input+label {
     padding: 2px;
-    width: 150px;
-    height: 60px;
+    width: 105px;
+    height: 35px;
     background: transparent;
     border-radius: 60px;
     display: flex;
@@ -164,7 +165,7 @@ input.switch_toggle-input+label:before {
 }
 
 input.switch_toggle-input+label:after {
-    width: 58px;
+    width: 38px;
     background-color: #fff;
     border-radius: 100%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -176,17 +177,20 @@ input.switch_toggle-input:checked+label:before {
 }
 
 input.switch_toggle-input:checked+label:after {
-    margin-left: 90px;
+    margin-left: 64px;
 }
 
 .container {
     width: 85vw;
-    margin: 1rem auto;
+    margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, auto);
+    height: calc(100vh - 300px);
+    column-gap: 32px;
+    row-gap: 42px;
 }
 
 .category_train,
@@ -232,12 +236,20 @@ input.switch_toggle-input:checked+label:after {
 .card_play {
     overflow: hidden;
     min-height: 170px;
-    height: 43vh;
-    margin: 1rem 0;
+    width: 100%;
+    height: 100%;
     border-radius: 12px;
     transition: all .3s ease-in-out;
     background-color: #ddd;
     perspective: 1000px;
+}
+
+.card img {
+    max-height: calc(100% - 30px);
+}
+
+.card .card_img {
+    border-radius: 12px;
 }
 
 .card_play {
@@ -349,13 +361,18 @@ footer li {
     list-style: none;
 }
 
-footer li:last-child {
-    width: 10vw;
-    height: 15px;
-}
-
 footer li:last-child img {
     max-height: 27px;
+}
+
+.nav-aside {
+    position: absolute;
+    width: 5vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    background-color: red;
+    z-index: 5;
 }
 
 @media screen and (max-width: 1000px) {

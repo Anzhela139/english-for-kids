@@ -1,11 +1,12 @@
 import { playSound, getAncestor, makeElem } from './utils.js';
+import { ASSETS_URL_AUDIO, ASSETS_URL_IMAGES } from './constans.js';
 
 class Card {
-    constructor(word, translation, image, sound) {
+    constructor( word, translation ) {
         this.word = word;
         this.translation = translation;
-        this.image = image;
-        this.sound = sound;
+        this.image = `${ASSETS_URL_IMAGES}${word}.jpg`;
+        this.sound = `${ASSETS_URL_AUDIO}${word}.mp3`;
     }
 
     makeSound(card, sound) {
@@ -15,13 +16,13 @@ class Card {
     }
 
     makeCardTrain() {
-        let $card = makeElem('div', 'card');
-        let $imageCtr = makeElem('div', 'card_img');
+        let card = makeElem('div', 'card');
+        let imageCtr = makeElem('div', 'card_img');
         let $image = makeElem('img', '');
         $image.src = this.image;
         $image.setAttribute('alt', this.word);
 
-        let $flip = makeElem('div', 'flip');
+        let flip = makeElem('div', 'flip');
         let $front = makeElem('div', 'front');
         let $back = makeElem('div', 'back');
         let $titleFront = makeElem('h3', '', this.word);
@@ -35,41 +36,44 @@ class Card {
         let $sound = makeElem('audio');
         $sound.src = this.sound;
 
-        $imageCtr.appendChild($image);
+        imageCtr.appendChild($image);
         $btn.appendChild($btnIcon);
         $wordCtr.appendChild($word);
         $wordCtr.appendChild($btn);
         $translationCtr.appendChild($translation);
 
-        $front.appendChild($imageCtr);
+        $front.appendChild(imageCtr);
         $front.appendChild($wordCtr);
 
-        let $clone = $imageCtr.cloneNode(true);
+        let $clone = imageCtr.cloneNode(true);
         $back.appendChild($clone);
         $back.appendChild($translationCtr);
 
-        $flip.appendChild($front);
-        $flip.appendChild($back);
-        $card.appendChild($flip);
-        $card.appendChild($sound);
+        flip.appendChild($front);
+        flip.appendChild($back);
+        card.appendChild(flip);
+        card.appendChild($sound);
 
-        $btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            let $flip = getAncestor(this, 'flip');
-            $flip.classList.add('flip-over');
-            $card.addEventListener('mouseleave', function () {
-                this.firstElementChild.classList.remove('flip-over');
-            })
-        });
+        $btn.addEventListener('click', this.handleFlipCard.bind(this));
 
-        this.makeSound($card, $sound);
+        this.makeSound(card, $sound);
 
-        return $card;
+        return card;
+    }
+
+    handleFlipCard(event) {
+        event.stopPropagation();
+        const card = getAncestor(event.target, '.card');
+        let flip = getAncestor(event.target, 'flip');
+        flip.classList.add('flip-over');
+        card.addEventListener('mouseleave', function () {
+            this.firstElementChild.classList.remove('flip-over');
+        })
     }
 
     makeCardPlay() {
-        let $card = makeElem('div', 'card_play');
-        let $imageCtr = makeElem('div', 'card_img');
+        let card = makeElem('div', 'card_play');
+        let imageCtr = makeElem('div', 'card_img');
         let $image = makeElem('img', '');
         $image.src = this.image;
         $image.setAttribute('alt', this.word);
@@ -78,12 +82,12 @@ class Card {
         $sound.setAttribute('data-route', this.word);
         $sound.src = this.sound;
 
-        $imageCtr.appendChild($image);
-        $card.appendChild($imageCtr);
-        $card.appendChild($sound);
-        $card.setAttribute('data-route', this.word);
+        imageCtr.appendChild($image);
+        card.appendChild(imageCtr);
+        card.appendChild($sound);
+        card.setAttribute('data-route', this.word);
 
-        return $card;
+        return card;
     }
 }
 
