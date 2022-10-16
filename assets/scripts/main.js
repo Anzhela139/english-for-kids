@@ -7,6 +7,7 @@ import Category from './category.js';
 import Router from './router.js';
 import Stars from './stars.js';
 import { playSound, getDescendant, randomArr, makeElem } from './utils.js';
+import { ASSETS_URL_AUDIO, ASSETS_URL_IMAGES } from './constans.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     new App(
@@ -70,6 +71,11 @@ class App {
         this.init();
     }
     init() {
+        const btnWrapper = document.querySelector('.btn-play--wraper');
+        if(btnWrapper) {
+            btnWrapper.remove();
+        }
+        
         this.linkRouter = new Router();
         this.pageScreen(this.linkRouter);
 
@@ -133,98 +139,108 @@ class App {
     }
 
     handleCard(event) {
+        console.log(event.target.closest('.card_play'), this.word)
         if (event.target.getAttribute('data-route') === this.word) {
-            event.target.add('checked_card');
+            event.target.closest('.card_play').classList.add('checked_card');
             let $starsCNR = this.stars.makeStar(this.mark);
             this.mark++;
             this.container.before($starsCNR);
-            playSound();
+            const correctSound = this.audiosPlayControls.find((el) => el.id === 'correct-audio');
+            playSound(correctSound);
         } else {
             this.fail = true;
-            playSound($errSound);
+            const errSound = this.audiosPlayControls.find((el) => el.id === 'error-audio');
+            playSound(errSound);
         }
+        console.log(this.mixedAudios)
         if (this.mixedAudios.length === 0) {
-            this.container.innerHTML = '';
-            if (!this.fail) {
-                this.container.appendChild($finalImgW);
-                this.container.appendChild($succSound);
-                playSound($succSound);
-                setTimeout(() => {
-                    this.mode = 'train';
-                    this.init();
-                }, 8000);
-            } else {
-                this.container.appendChild($finalImgF);
-                this.container.appendChild($failSound);
-                playSound($failSound);
-                setTimeout(() => {
-                    this.mode = 'train';
-                    this.init();
-                }, 8000);
-            }
+            this.makeFinish();
         }
+    }
+
+    makeFinish() {
+        let $finalImgW = makeElem('img', 'final-img');
+        $finalImgW.src = `${ASSETS_URL_IMAGES}success.jpg`;
+        $finalImgW.setAttribute('alt', 'success');
+        let $finalImgF = $finalImgW.cloneNode(true);
+        $finalImgF.src = `${ASSETS_URL_IMAGES}failure.jpg`;
+        $finalImgF.setAttribute('alt', 'failure');
+
+        this.container.innerHTML = '';
+        this.container.classList.add('final');
+        if (!this.fail) {
+            this.container.appendChild($finalImgW);
+            const failureSound = this.audiosPlayControls.find((el) => el.id === 'success-audio');
+            playSound(failureSound);
+            // setTimeout(() => {
+            //     this.mode = 'train';
+            //     this.init();
+            // }, 8000);
+        } else {
+            this.container.appendChild($finalImgF);
+            const failureSound = this.audiosPlayControls.find((el) => el.id === 'failure-audio');
+            playSound(failureSound);
+            // setTimeout(() => {
+            //     this.mode = 'train';
+            //     this.init();
+            // }, 8000);
+        }
+
+        const btnWrapper = document.querySelector('.btn-play--wraper');
+        btnWrapper.innerHTML = '';
+
+        const $btnPlay = makeElem('button', 'btn-play', 'play again');
+        let $btnIcon = makeElem('span', 'material-icons', 'replay');
+        $btnPlay.addEventListener('click', this.handlePlay.bind(this, $btnIcon));
+        const btnTrain = makeElem('button', 'btn-train', 'train more');
+        btnTrain.addEventListener('click', this.init.bind(this));
+        btnWrapper.appendChild($btnPlay);
+        btnWrapper.appendChild(btnTrain);
     }
 
     makeAudioPlayControls() {
-        let $errSound = makeElem('audio');
-        const audioSrc = ( name ) => `assets/audio/${name}.mp3`;
-
-        $errSound.src = audioSrc('error');
-        $errSound.id = `error-audio`;
-        let $corrSound = makeElem('audio');
-        $corrSound.src = audioSrc('correct');
-        $corrSound.id = `correct-audio`;
-        let $failSound = makeElem('audio');
-        $failSound.src = audioSrc('failure');
-        $failSound.id = `failure-audio`;
-        let $succSound = makeElem('audio');
-        $succSound.src = audioSrc('success');
-        $succSound.id = `success-audio`;
-
-        this.container.appendChild($errSound);
-        this.container.appendChild($corrSound);
-        this.container.appendChild($failSound);
-        this.container.appendChild($succSound);
+        const audioPlayWrap = makeElem('div');
+        audioPlayWrap.setAttribute('data-js-audio-controls', '')
+        const makeAudioControls = ( name ) => {
+            const audioElem = makeElem('audio');
+            audioElem.src = `${ASSETS_URL_AUDIO}${name}.mp3`;
+            audioElem.id = `${name}-audio`;
+            this.audiosPlayControls.push(audioElem);
+            audioPlayWrap.appendChild(audioElem);
+        }
+        makeAudioControls('error');
+        makeAudioControls('correct');
+        makeAudioControls('failure');
+        makeAudioControls('success');
+        this.container.after(audioPlayWrap);
     }
 
-    makePlay(cardItems) {
-        let $finalImgW = makeElem('img', 'final-img');
-        $finalImgW.src = 'assets/img/success.jpg';
-        $finalImgW.setAttribute('alt', 'success');
-        let $finalImgF = $finalImgW.cloneNode(true);
-        $finalImgF.src = 'assets/img/failure.jpg';
-        $finalImgF.setAttribute('alt', 'failure');
-
+    playMode() {
         this.stars = new Stars();
  
-
-        cardItems.forEach(item => {
-            let audio = getDescendant(item.dom, 'card_sound');
-            this.cardsPlay.push(item.dom);
-
-            this.audiosPlay.push(audio);
-        })
-console.log(this.audiosPlay)
         this.makeAudioPlayControls();
-        if(!this.container.querySelector('.btn-play')) {
+        if(!document.querySelector('.btn-play--wraper')) {
+            let wrapper = makeElem('div', 'btn-play--wraper');
             let $btnPlay = makeElem('button', 'btn-play', 'start');
             let $btnIcon = makeElem('span', 'material-icons', 'replay');
             $btnPlay.appendChild($btnIcon);
             $btnPlay.addEventListener('click', this.handlePlay.bind(this, $btnIcon));
-            this.container.after($btnPlay);
+            wrapper.appendChild($btnPlay);
+            this.container.after(wrapper);
         }
     }
 
     handlePlay(...args) {
         this.mixedAudios = randomArr(this.audiosPlay);
         playSound(this.mixedAudios[0]);
+        console.log(this.mixedAudios)
         let repeat = this.mixedAudios.shift();
         const btnPlay = args[1].target;
         btnPlay.innerHTML = '';
         console.log(args)
-        btnPlay.appendChild(args[0]);
+        // btnPlay.appendChild(args[0]);
         this.word = repeat.getAttribute('data-route')
-        this.handleTimer(this.mixedAudios, 8000, false);
+        this.handleTimer(this.mixedAudios, 4000, false);
         args[0].addEventListener('click', this.handleCardSound.bind(this));
 
         this.cardsPlay.forEach(item => {
@@ -235,6 +251,8 @@ console.log(this.audiosPlay)
     handleTimer( audios, delay, clear ) {
         const makeTimer = (arr, timer) => setTimeout(() => {
             let repeat = arr.shift();
+            if(!repeat) return;
+
             this.word = repeat.getAttribute('data-route');
             playSound(repeat);
             makeTimer(arr, timer);
@@ -263,12 +281,19 @@ console.log(this.audiosPlay)
         let cardItems = [];
         cards[index].forEach(item => {
             let itemCard = new Card(item.word, item.translation);
-            itemCard.dom = (this.mode === 'train') ? itemCard.makeCardTrain() : itemCard.makeCardPlay();
+            itemCard.dom = (this.mode === 'train') ? itemCard.makeCardTrain() : itemCard.makeCardPlay(); 
+
+            if(this.mode !== 'train') {
+                let audio = getDescendant(itemCard.dom, 'card_sound');
+                this.cardsPlay.push(itemCard.dom);
+                this.audiosPlay.push(audio);
+            }
+
             cardItems.push(itemCard);
             this.container.appendChild(itemCard.dom);
         })
-        if (this.mode === 'train') { } else {
-            this.makePlay(cardItems);
+        if (this.mode !== 'train') {
+            this.playMode();
         }
         return cardItems;
     }

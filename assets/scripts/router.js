@@ -36,7 +36,6 @@ class Router {
     };
 
     poppin(ev) {
-        //let hash = location.hash.replace('#' ,'');
         history.pushState({}, this.currentPage, `#${this.currentPage}`);
     };
 }

@@ -22,6 +22,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 1440px;
 }
 
 .menu_burger {
@@ -188,9 +189,16 @@ input.switch_toggle-input:checked+label:after {
     justify-content: space-between;
     display: grid;
     grid-template-columns: repeat(3, auto);
-    height: calc(100vh - 300px);
+    height: calc(100vh - 200px);
     column-gap: 32px;
     row-gap: 42px;
+    max-width: 1440px;
+}
+
+.container.final {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .category_train,
@@ -198,6 +206,7 @@ input.switch_toggle-input:checked+label:after {
     overflow: hidden;
     max-width: 25vw;
     margin: 1rem 0;
+    max-height: 260px;
     border-radius: 12px;
     transition: all .3s ease-in-out;
 }
@@ -206,7 +215,8 @@ input.switch_toggle-input:checked+label:after {
 .category_play:hover,
 .card:hover,
 .card_play:hover,
-.btn-play {
+.btn-play,
+.btn-train {
     box-shadow: 2px 2px 5px 2px rgba(41, 41, 41, 0.15);
     cursor: pointer;
 }
@@ -219,12 +229,25 @@ input.switch_toggle-input:checked+label:after {
     background-image: linear-gradient(38deg, #2ba1ff, #70bfc4, #7ddf86, #72ff2a);
 }
 
+.category_img {
+    max-height: calc(100% - 40px);
+    overflow: hidden;
+}
+
+.category_title {
+    min-height: 40px;
+}
+
 .category_title h3,
 .card_title h3 {
     font-weight: 400;
     margin-left: 5%;
     color: #fff;
     letter-spacing: 2;
+}
+
+.card_title button {
+    margin-right: 5%;
 }
 
 .card {
@@ -237,6 +260,8 @@ input.switch_toggle-input:checked+label:after {
     overflow: hidden;
     min-height: 170px;
     width: 100%;
+    max-width: 350px;
+    max-height: 210px;
     height: 100%;
     border-radius: 12px;
     transition: all .3s ease-in-out;
@@ -244,12 +269,11 @@ input.switch_toggle-input:checked+label:after {
     perspective: 1000px;
 }
 
-.card img {
-    max-height: calc(100% - 30px);
-}
-
 .card .card_img {
     border-radius: 12px;
+    max-height: 180px;
+    position: relative;
+    z-index: 1;
 }
 
 .card_play {
@@ -261,6 +285,8 @@ input.switch_toggle-input:checked+label:after {
 .card_play .card_img {
     height: 100%;
     object-fit: contain;
+    position: relative;
+    z-index: 1;
 }
 
 .card .flip.flip-over {
@@ -293,9 +319,13 @@ input.switch_toggle-input:checked+label:after {
 }
 
 .card_title {
+    max-width: 350px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: #fff;
+    position: relative;
+    z-index: 5;
 }
 
 .card_title h3 {
@@ -314,21 +344,34 @@ input.switch_toggle-input:checked+label:after {
     filter: blur(6.33px) grayscale(0.82);
 }
 
-.btn-play {
+.btn-play,
+.btn-train {
     appearance: none;
     outline: none;
     border: none;
     background-image: linear-gradient(38deg, #2ba1ff, #70bfc4, #7ddf86, #72ff2a);
     display: block;
-    margin: 2rem auto;
+    margin: 0 auto;
     color: #fff;
     font-size: 1.25rem;
-    width: 30vw;
-    height: 10vh;
+    width: 15vw;
+    height: 4vh;
     border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.btn-train {
+    background-image: linear-gradient(44deg, #af129a, #d1637e, #ea9d5a, #fed400);
+}
+
+.btn-play--wraper {
+    display: flex;
+    width: calc(30vw + 16px);
+    height: fit-content;
+    justify-content: center;
+    margin: 0 auto;
 }
 
 .material-icons {
@@ -342,7 +385,7 @@ input.switch_toggle-input:checked+label:after {
 footer {
     background-color: #ddd;
     box-shadow: 0px -5px 5px 0px rgba(156, 156, 156, 0.3);
-    padding: 1rem 0;
+    padding: 0.5rem 0;
     position: absolute;
     left: 0;
     width: 100%;
@@ -351,6 +394,7 @@ footer {
 
 footer ul {
     width: 85vw;
+    max-width: 1440px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;

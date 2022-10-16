@@ -61,14 +61,19 @@ class Card {
         return card;
     }
 
+    handleFlipBack(event) {
+        const flip = event.target.querySelector('.flip');
+        if(!flip) return;
+        flip.classList.remove('flip-over')
+    }
+
     handleFlipCard(event) {
         event.stopPropagation();
-        const card = getAncestor(event.target, '.card');
+        const card = event.target.closest('.card');
         let flip = getAncestor(event.target, 'flip');
         flip.classList.add('flip-over');
-        card.addEventListener('mouseleave', function () {
-            this.firstElementChild.classList.remove('flip-over');
-        })
+        card.addEventListener('mouseleave', this.handleFlipBack.bind(this));
+        card.removeEventListener('mouseleave', this.handleFlipBack.bind(this))
     }
 
     makeCardPlay() {
@@ -77,6 +82,7 @@ class Card {
         let $image = makeElem('img', '');
         $image.src = this.image;
         $image.setAttribute('alt', this.word);
+        $image.setAttribute('data-route', this.word);
 
         let $sound = makeElem('audio', 'card_sound');
         $sound.setAttribute('data-route', this.word);
