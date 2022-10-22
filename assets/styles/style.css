@@ -375,7 +375,10 @@ input.switch_toggle-input:checked+label:after {
 }
 
 .material-icons {
-    color: #af129a;
+    color: #2ba1ff;
+    background-image: linear-gradient(38deg, #2ba1ff, #70bfc4, #7ddf86, #72ff2a);
+    -webkit-background-clip: text;
+    color: transparent;
 }
 
 .btn-play .material-icons {

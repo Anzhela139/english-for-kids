@@ -5,7 +5,7 @@ import categories from './categories.js';
 import Card from './card.js';
 import Category from './category.js';
 import Router from './router.js';
-import Stars from './stars.js';
+import Statistics from './statistics.js';
 import { playSound, getDescendant, randomArr, makeElem } from './utils.js';
 import { ASSETS_URL_AUDIO, ASSETS_URL_IMAGES } from './constans.js';
 
@@ -44,7 +44,7 @@ class App {
 
         this.fail = false;
         this.linkRouter = null;
-        this.stars = null;
+        this.statistics = null;
         this.mark = 1;
         this.audiosPlay = [];
         this.word = '';
@@ -105,7 +105,6 @@ class App {
     }
 
     handleSwitchMode(event) {
-        console.log(event.target.checked)
         this.mode = (this.mode === 'train') ? 'play' : 'train';
         this.toggleSwitchLabel.innerHTML = this.mode;
         this.toggleSwitchLabel.style.paddingRight = (this.mode === 'train') ? '1rem' : '3.5rem';
@@ -139,20 +138,21 @@ class App {
     }
 
     handleCard(event) {
-        console.log(event.target.closest('.card_play'), this.word)
+        this.statistics.gradeAnswer(this.mark);
+
         if (event.target.getAttribute('data-route') === this.word) {
             event.target.closest('.card_play').classList.add('checked_card');
-            let $starsCNR = this.stars.makeStar(this.mark);
             this.mark++;
-            this.container.before($starsCNR);
+
             const correctSound = this.audiosPlayControls.find((el) => el.id === 'correct-audio');
             playSound(correctSound);
         } else {
             this.fail = true;
+
             const errSound = this.audiosPlayControls.find((el) => el.id === 'error-audio');
             playSound(errSound);
         }
-        console.log(this.mixedAudios)
+
         if (this.mixedAudios.length === 0) {
             this.makeFinish();
         }
@@ -172,18 +172,10 @@ class App {
             this.container.appendChild($finalImgW);
             const failureSound = this.audiosPlayControls.find((el) => el.id === 'success-audio');
             playSound(failureSound);
-            // setTimeout(() => {
-            //     this.mode = 'train';
-            //     this.init();
-            // }, 8000);
         } else {
             this.container.appendChild($finalImgF);
             const failureSound = this.audiosPlayControls.find((el) => el.id === 'failure-audio');
             playSound(failureSound);
-            // setTimeout(() => {
-            //     this.mode = 'train';
-            //     this.init();
-            // }, 8000);
         }
 
         const btnWrapper = document.querySelector('.btn-play--wraper');
@@ -216,8 +208,9 @@ class App {
     }
 
     playMode() {
-        this.stars = new Stars();
- 
+        this.statistics = new Statistics(this.container);
+        this.statistics.initGrades();
+
         this.makeAudioPlayControls();
         if(!document.querySelector('.btn-play--wraper')) {
             let wrapper = makeElem('div', 'btn-play--wraper');
@@ -233,13 +226,10 @@ class App {
     handlePlay(...args) {
         this.mixedAudios = randomArr(this.audiosPlay);
         playSound(this.mixedAudios[0]);
-        console.log(this.mixedAudios)
-        let repeat = this.mixedAudios.shift();
+
         const btnPlay = args[1].target;
         btnPlay.innerHTML = '';
-        console.log(args)
-        // btnPlay.appendChild(args[0]);
-        this.word = repeat.getAttribute('data-route')
+
         this.handleTimer(this.mixedAudios, 4000, false);
         args[0].addEventListener('click', this.handleCardSound.bind(this));
 

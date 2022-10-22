@@ -1,30 +1,35 @@
 import { makeElem } from './utils.js';
 
 class Stars {
-    constructor(grade) {
-        this.grade = grade;
+    constructor(container) {
+        this.container = container;
+        this.starsContainer = null;
+
+        this.init();
     }
-    makeStar() {
-        let $starsCNR = makeElem('div', 'stars-cnr');
-        let mark = (this.grade) ? grade / 2 : 0;
-        console.log(mark)
+    init() {
+        this.starsContainer = makeElem('div', 'stars-cnr');
+        this.container.before(this.starsContainer);
+        this.makeStar(0);
+    }
+    makeStar(grade) {
+        let mark = (grade) ? grade / 2 : 0;
+        this.starsContainer.innerHTML = '';
 
         for (let i = 0; i < 4; i++) {
-            if (mark % 1 == 0.5 && mark > 0) {
-                let $starHalf = makeElem('span', 'material-icons', 'star_half');
-                $starsCNR.appendChild($starHalf);
-                mark -= 0.5;
-            } else if (mark <= 8 && mark > 0) {
-                let $starFull = makeElem('span', 'material-icons', 'star');
-                $starsCNR.prepend($starFull);
-                mark -= 1;
-            } else if (mark <= 0) {
-                let $starVoid = makeElem('span', 'material-icons', 'star_border');
-                $starsCNR.appendChild($starVoid);
+            let star;
+            
+            if (mark <= 0) {
+                star = makeElem('span', 'material-icons', 'star_border');
+            } else if (mark === 0.5) { 
+                star = makeElem('span', 'material-icons', 'star_half');
+            } else {
+                star = makeElem('span', 'material-icons', 'star');
             }
-            console.log(mark)
+
+            this.starsContainer.appendChild(star);
+            mark = mark ? mark - 1 : mark;
         }
-        return $starsCNR;
     }
 }
 
