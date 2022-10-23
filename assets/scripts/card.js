@@ -1,22 +1,25 @@
-import { playSound, getAncestor, makeElem } from './utils.js';
+import { playSound, makeElem } from './utils.js';
 import { ASSETS_URL_AUDIO, ASSETS_URL_IMAGES } from './constans.js';
 
 class Card {
-    constructor( word, translation ) {
+    constructor( word, translation, id ) {
         this.word = word;
         this.translation = translation;
+        this.id = id;
         this.image = `${ASSETS_URL_IMAGES}${word}.jpg`;
         this.sound = `${ASSETS_URL_AUDIO}${word}.mp3`;
     }
 
     makeSound(card, sound) {
-        card.addEventListener('click', function () {
+        card.addEventListener('click', function (event) {
+            if(event.target.closest('.btn-rotate')) return;
             playSound(sound);
         });
     }
 
     makeCardTrain() {
         let card = makeElem('div', 'card');
+        card.setAttribute('data-js-card-id', this.id);
         let imageCtr = makeElem('div', 'card_img');
         let $image = makeElem('img', '');
         $image.src = this.image;
@@ -54,8 +57,6 @@ class Card {
         card.appendChild(flip);
         card.appendChild($sound);
 
-        $btn.addEventListener('click', this.handleFlipCard.bind(this));
-
         this.makeSound(card, $sound);
 
         return card;
@@ -67,17 +68,9 @@ class Card {
         flip.classList.remove('flip-over')
     }
 
-    handleFlipCard(event) {
-        event.stopPropagation();
-        const card = event.target.closest('.card');
-        let flip = getAncestor(event.target, 'flip');
-        flip.classList.add('flip-over');
-        card.addEventListener('mouseleave', this.handleFlipBack.bind(this));
-        card.removeEventListener('mouseleave', this.handleFlipBack.bind(this))
-    }
-
     makeCardPlay() {
         let card = makeElem('div', 'card_play');
+        card.setAttribute('data-js-card-id', this.id)
         let imageCtr = makeElem('div', 'card_img');
         let $image = makeElem('img', '');
         $image.src = this.image;

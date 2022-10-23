@@ -17,7 +17,7 @@ class Stars {
         let mark = (grade) ? grade / 2 : 0;
         this.starsContainer.innerHTML = '';
 
-        for (let i = 0; i < this.questionListLength; i++) {
+        for (let i = 0; i < this.questionListLength / 2; i++) {
             let star;
             
             if (mark <= 0) {

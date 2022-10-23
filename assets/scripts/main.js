@@ -6,7 +6,7 @@ import Card from './card.js';
 import Category from './category.js';
 import Router from './router.js';
 import Statistics from './statistics.js';
-import { playSound, getDescendant, randomArr, makeElem } from './utils.js';
+import { playSound, getDescendant, getAncestor, randomArr, makeElem } from './utils.js';
 import { ASSETS_URL_AUDIO, ASSETS_URL_IMAGES } from './constans.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -44,7 +44,7 @@ class App {
 
         this.fail = false;
         this.linkRouter = null;
-        this.statistics = null;
+        this.statistics = new Statistics(this.container);
         this.mark = 1;
         this.audiosPlay = [];
         this.word = '';
@@ -102,7 +102,17 @@ class App {
 
     handleMakeLink(event) {
         let route = event.target.getAttribute('data-index');
-        (route === '-1') ? this.makeMain(this.linkRouter) : this.makeCategoryPage(+route + 1);
+        if(route === '-1') {
+            this.container.closest('body').classList.remove('body-with-table');
+            this.container.classList.remove('statistics-table');
+            this.makeMain(this.linkRouter)
+        } else if (route === '8') {
+            this.makeStatisticsPage();
+        } else {
+            this.container.closest('body').classList.remove('body-with-table');
+            this.container.classList.remove('statistics-table');
+            this.makeCategoryPage(+route + 1)
+        }
 
         this.linkRouter.nav(event);
     }
@@ -155,13 +165,15 @@ class App {
 
             const correctSound = this.audiosPlayControls.find((el) => el.id === 'correct-audio');
             playSound(correctSound);
+            this.statistics.writeAnswer(event.target.closest('.card_play').dataset['jsCardId'], true);
         } else {
             this.fail = true;
 
             const errSound = this.audiosPlayControls.find((el) => el.id === 'error-audio');
             playSound(errSound);
+            this.statistics.writeAnswer(event.target.closest('.card_play').dataset['jsCardId'], false);
         }
-
+        
         if (this.mixedAudios.length === 0) {
             this.makeFinish();
         }
@@ -219,9 +231,6 @@ class App {
     }
 
     playMode() {
-        this.statistics = new Statistics(this.container);
-        this.statistics.initGrades();
-
         this.makeAudioPlayControls();
         if(!document.querySelector('.btn-play--wraper')) {
             let wrapper = makeElem('div', 'btn-play--wraper');
@@ -236,6 +245,7 @@ class App {
 
     handlePlay(...args) {
         this.mixedAudios = randomArr(this.audiosPlay);
+        this.statistics.initGrades(this.mixedAudios.length);
         playSound(this.mixedAudios[0]);
 
         const btnPlay = args[1].target;
@@ -281,13 +291,15 @@ class App {
         this.container.innerHTML = '';
         let cardItems = [];
         cards[index].forEach(item => {
-            let itemCard = new Card(item.word, item.translation);
+            let itemCard = new Card(item.word, item.translation, item.id);
             itemCard.dom = (this.mode === 'train') ? itemCard.makeCardTrain() : itemCard.makeCardPlay(); 
 
             if(this.mode !== 'train') {
                 let audio = getDescendant(itemCard.dom, 'card_sound');
                 this.cardsPlay.push(itemCard.dom);
                 this.audiosPlay.push(audio);
+            } else {
+                itemCard.dom.addEventListener('click', this.handleFlipCard.bind(itemCard));
             }
 
             cardItems.push(itemCard);
@@ -297,6 +309,65 @@ class App {
             this.playMode();
         }
         return cardItems;
+    }
+
+    handleFlipCard(event) {
+        if(!event.target.closest('.btn-rotate')) return;
+
+        event.stopPropagation();
+        const card = event.target.closest('.card');
+        this.statistics.writeTrainedCard(card.dataset['jsCardId']);
+        let flip = getAncestor(event.target, 'flip');
+        flip.classList.add('flip-over');
+        card.addEventListener('mouseleave', this.handleFlipBack.bind(this));
+        card.removeEventListener('mouseleave', this.handleFlipBack.bind(this))
+    }
+
+    makeStatisticsPage() {
+        this.container.innerHTML = '';
+
+        const divWrapper = makeElem('div', 'table--wrapper', '');
+        const table = makeElem('table', 'table-responsive', '');
+
+        const makeTHeader = ( arr, thead ) => {
+            arr.map((el) => {
+                const th = makeElem('th', '', el);
+                thead.appendChild(th);
+            })
+        }
+
+        const thead = makeElem('thead', '', '');
+        makeTHeader(
+            ['Categories', 'Words', 'Translation', 'Trained', 'Correct', 'Incorrect', '%'],
+            thead
+        )
+        const tbody = makeElem('tbody', '', '')
+        const statisticsData = this.statistics.getStatisticsData();
+
+        statisticsData.map((el) => {
+            const tr = makeElem('tr');
+            const makeApend = ( name ) => {
+                const elem = makeElem('td', '', name);
+                tr.appendChild(elem);
+            }
+
+            makeApend(el.category);
+            makeApend(el.word);
+            makeApend(el.translation);
+            makeApend(el.trained);
+            makeApend(el.correct);
+            makeApend(el.incorrect);
+            makeApend(el.procent);
+
+            tbody.appendChild(tr);
+        })
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        divWrapper.appendChild(table);
+        this.container.closest('body').classList.toggle('body-with-table');
+        this.container.classList.toggle('statistics-table');
+        this.container.appendChild(divWrapper);
     }
 
     makeMain() {

@@ -28,6 +28,16 @@ const categories = [
         name: 'emotions',
         image: 'assets/images/surprised.jpg',
         index: 5
+    },
+    {
+        name: 'foods',
+        image: 'assets/images/pie.jpg',
+        index: 6
+    },
+    {
+        name: 'weather',
+        image: 'assets/images/snow.jpg',
+        index: 7
     }
 ]
 
