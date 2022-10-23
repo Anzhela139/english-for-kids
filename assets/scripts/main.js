@@ -80,11 +80,14 @@ class App {
         this.pageScreen(this.linkRouter);
 
         let $links = document.querySelectorAll('.menu-el a');
+
         $links.forEach((link) => {
             link.addEventListener('click', this.handleMakeLink.bind(this));
         })
+
         this.toggleSwitch.addEventListener('input', this.handleSwitchMode.bind(this));
         this.menuBurgerBtn.addEventListener('click', this.handleMenu.bind(this));
+        this.menu.addEventListener('transitionend', this.handleMenuBtn.bind(this));
         this.screen.addEventListener('click', this.handleMenu.bind(this));
     }
 
@@ -119,17 +122,23 @@ class App {
         return this.mode;
     }
 
-    handleMenu(event) {
-        this.menu.hidden = this.menuBurgerBtn.classList.contains('menu-burger-rotate');
-        this.menu.classList.toggle('menu-open');
-        this.menu.classList.toggle('menu-close');
-        this.menuBurgerBtn.classList.toggle('menu-burger-rotate');
+    handleMenuBtn() {
+        this.menuBurgerBtn.classList.toggle('handler-disabled');
+    }
 
-        if (!document.querySelector(".fade-on")) {
-            this.screen.classList.add('fade-on');
-        } else {
-            this.screen.classList.remove('fade-on');
-        }
+    handleMenu() {
+        this.menu.hidden = false;
+        this.menuBurgerBtn.classList.toggle('menu-burger-rotate');
+        this.handleMenuBtn();
+        setTimeout(() => {
+            this.menu.classList.toggle('menu-open');
+    
+            if (!document.querySelector(".fade-on")) {
+                this.screen.classList.add('fade-on');
+            } else {
+                this.screen.classList.remove('fade-on');
+            }
+        }, 5)
     }
 
     handleCategory(...args) {
@@ -159,21 +168,21 @@ class App {
     }
 
     makeFinish() {
-        let $finalImgW = makeElem('img', 'final-img');
-        $finalImgW.src = `${ASSETS_URL_IMAGES}success.jpg`;
-        $finalImgW.setAttribute('alt', 'success');
-        let $finalImgF = $finalImgW.cloneNode(true);
-        $finalImgF.src = `${ASSETS_URL_IMAGES}failure.jpg`;
-        $finalImgF.setAttribute('alt', 'failure');
+        let finalImgW = makeElem('img', 'final-img');
+        finalImgW.src = `${ASSETS_URL_IMAGES}success.jpg`;
+        finalImgW.setAttribute('alt', 'success');
+        let finalImgF = finalImgW.cloneNode(true);
+        finalImgF.src = `${ASSETS_URL_IMAGES}failure.jpg`;
+        finalImgF.setAttribute('alt', 'failure');
 
         this.container.innerHTML = '';
         this.container.classList.add('final');
         if (!this.fail) {
-            this.container.appendChild($finalImgW);
+            this.container.appendChild(finalImgW);
             const failureSound = this.audiosPlayControls.find((el) => el.id === 'success-audio');
             playSound(failureSound);
         } else {
-            this.container.appendChild($finalImgF);
+            this.container.appendChild(finalImgF);
             const failureSound = this.audiosPlayControls.find((el) => el.id === 'failure-audio');
             playSound(failureSound);
         }
@@ -183,16 +192,17 @@ class App {
 
         const $btnPlay = makeElem('button', 'btn-play', 'play again');
         let $btnIcon = makeElem('span', 'material-icons', 'replay');
-        $btnPlay.addEventListener('click', this.handlePlay.bind(this, $btnIcon));
+        $btnPlay.addEventListener('click', this.handlePlay.bind(this, $btnIcon), { once: true });
         const btnTrain = makeElem('button', 'btn-train', 'train more');
         btnTrain.addEventListener('click', this.init.bind(this));
         btnWrapper.appendChild($btnPlay);
         btnWrapper.appendChild(btnTrain);
-    }
+    }  
 
     makeAudioPlayControls() {
         const audioPlayWrap = makeElem('div');
         audioPlayWrap.setAttribute('data-js-audio-controls', '')
+
         const makeAudioControls = ( name ) => {
             const audioElem = makeElem('audio');
             audioElem.src = `${ASSETS_URL_AUDIO}${name}.mp3`;
@@ -200,6 +210,7 @@ class App {
             this.audiosPlayControls.push(audioElem);
             audioPlayWrap.appendChild(audioElem);
         }
+
         makeAudioControls('error');
         makeAudioControls('correct');
         makeAudioControls('failure');
@@ -217,7 +228,7 @@ class App {
             let $btnPlay = makeElem('button', 'btn-play', 'start');
             let $btnIcon = makeElem('span', 'material-icons', 'replay');
             $btnPlay.appendChild($btnIcon);
-            $btnPlay.addEventListener('click', this.handlePlay.bind(this, $btnIcon));
+            $btnPlay.addEventListener('click', this.handlePlay.bind(this, $btnIcon), { once: true });
             wrapper.appendChild($btnPlay);
             this.container.after(wrapper);
         }

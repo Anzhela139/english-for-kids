@@ -1,15 +1,15 @@
 import Stars from './stars.js';
 
 class Statistics {
-    constructor( container ) {
+    constructor( container, questionListLength ) {
         this.container = container;
+        this.questionListLength = questionListLength;
         this.stars = null;
         this.grade = 0;
-
     }
 
     initGrades() {
-        this.stars = new Stars(this.container);
+        this.stars = new Stars(this.container, this.questionListLength);
     }
 
     gradeAnswer(grade) {

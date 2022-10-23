@@ -1,8 +1,9 @@
 import { makeElem } from './utils.js';
 
 class Stars {
-    constructor(container) {
+    constructor( container, questionListLength ) {
         this.container = container;
+        this.questionListLength = questionListLength;
         this.starsContainer = null;
 
         this.init();
@@ -16,7 +17,7 @@ class Stars {
         let mark = (grade) ? grade / 2 : 0;
         this.starsContainer.innerHTML = '';
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < this.questionListLength; i++) {
             let star;
             
             if (mark <= 0) {
