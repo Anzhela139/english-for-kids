@@ -12,9 +12,11 @@ let pageObj = {
 }
 
 class Router {
-    constructor(link) {
+    constructor() {
         this.routes = [];
         this.currentPage = null;
+
+        this.init();
     };
 
     init() {
@@ -34,7 +36,6 @@ class Router {
     };
 
     poppin(ev) {
-        //let hash = location.hash.replace('#' ,'');
         history.pushState({}, this.currentPage, `#${this.currentPage}`);
     };
 }

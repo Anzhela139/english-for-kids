@@ -4,13 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="reset.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/styles/reset.min.css">
+    <link rel="stylesheet" href="assets/styles/materialdesignicons.min.css">
+    <link rel="stylesheet" href="assets/styles/style.css">
     <title>English for kids</title>
 </head>
 
@@ -21,7 +17,7 @@
             <span></span>
             <span></span>
         </div>
-        <nav class="menu menu-close">
+        <nav class="menu" hidden>
             <ul>
                 <li class="menu-el"><a href="#" data-route="main-page" data-index="-1">Main page</a></li>
                 <li class="menu-el"><a href="#" data-route="action-a" data-index="0">Action(set a)</a></li>
@@ -32,8 +28,7 @@
                 <li class="menu-el"><a href="#" data-route="emotions" data-index="5">Emotions</a></li>
                 <li class="menu-el"><a href="#" data-route="foods" data-index="6">Foods</a></li>
                 <li class="menu-el"><a href="#" data-route="weather" data-index="7">Weather</a></li>
-
-
+                <li class="menu-el"><a href="#" data-route="statistics" data-index="8">Statistics</a></li>
             </ul>
         </nav>
         <div class="switch_toggle">
@@ -41,6 +36,9 @@
             <label id='switch_toggle-label' for="switch_toggle">train</label>
         </div>
     </header>
+    <!-- <aside class="nav-aside">
+        <nav></nav>
+    </aside> -->
     <div class="container">
     </div>
     <footer>
@@ -50,7 +48,7 @@
         </ul>
     </footer>
     <div class="screen"></div>
-    <script src="script.js" type="module"></script>
+    <script src="assets/scripts/main.js" type="module"></script>
 </body>
 
 </html>
