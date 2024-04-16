@@ -10,6 +10,6 @@
 3. Statistics Page
 
 
-[Demo English-for-kids](https://anzhelaabitova.github.io/english-for-kids/)
+[Demo English-for-kids](https://Anzhela139.github.io/english-for-kids/)
 
-Главная ![image info](https://anzhelaabitova.github.io/english-for-kids/assets/images/screenshot.png)
+Главная ![image info](https://Anzhela139.github.io/english-for-kids/assets/images/screenshot.png)
